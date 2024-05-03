@@ -1,5 +1,6 @@
 package com.ipn.mx.ApiInventarioMini.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,5 +33,8 @@ public class Producto implements Serializable {
     @Column(name = "existencia", nullable = false)
     private int existencia;
 
+    @ManyToOne
+    @JoinColumn(name = "idCategoria")
+    @JsonBackReference
     private Categoria idCategoria;
 }

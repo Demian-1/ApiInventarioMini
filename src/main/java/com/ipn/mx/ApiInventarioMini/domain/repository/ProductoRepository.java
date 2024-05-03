@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     @Query(value = "call spProductosCategoria()", nativeQuery = true)
-    public List<Object[]> contaProductoPorCategoria();
+    public List<Object[]> contarProductoPorCategoria();
 }
