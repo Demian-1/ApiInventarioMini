@@ -29,14 +29,14 @@ public class Categoria implements Serializable {
     @Column(name = "descripcion_categoria", length = 250, nullable = false)
     private String descripcionCategoria;
 
-    @JsonIgnoreProperties(
-            value = {
-                    "idProducto",
-                    "hibernateLzyInitializer",
-                    "handler"
-            },
-            allowSetters = true
-    )
+//    @JsonIgnoreProperties(
+//            value = {
+//                    "idProducto",
+//                    "hibernateLzyInitializer",
+//                    "handler"
+//            },
+//            allowSetters = true
+//    )
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "categoria", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Producto> productos;

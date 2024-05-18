@@ -16,3 +16,22 @@ begin
 end $$
 delimiter ;
  */
+
+
+/*
+CREATE OR REPLACE FUNCTION spProductosCategoria()
+RETURNS TABLE(categoria VARCHAR, cantidad bigint) AS $$
+BEGIN
+RETURN QUERY
+SELECT c.nombre_categoria as categoria, COUNT(*) as cantidad
+FROM Producto p
+JOIN Categoria c ON c.idCategoria = p.idCategoria
+GROUP BY c.idCategoria;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP FUNCTION spproductoscategoria();
+
+
+SELECT * FROM spProductosCategoria();
+*/

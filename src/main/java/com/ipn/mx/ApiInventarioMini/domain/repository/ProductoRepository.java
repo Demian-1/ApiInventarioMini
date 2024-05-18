@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
-    @Query(value = "call spProductosCategoria()", nativeQuery = true)
+    @Query(value = "SELECT * FROM spProductosCategoria();", nativeQuery = true)
     public List<Object[]> contarProductoPorCategoria();
 }
