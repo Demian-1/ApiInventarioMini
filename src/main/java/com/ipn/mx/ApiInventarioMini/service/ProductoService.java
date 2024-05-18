@@ -3,16 +3,15 @@ package com.ipn.mx.ApiInventarioMini.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.ipn.mx.ApiInventarioMini.domain.dto.ProductoDTO;
 import com.ipn.mx.ApiInventarioMini.domain.dto.ProductosCategoria;
 import com.ipn.mx.ApiInventarioMini.domain.entity.Producto;
 
 public interface ProductoService {
-    public List<ProductosCategoria> productoPorCategoria();
+    List<ProductosCategoria> productoPorCategoria();
 
-    public List<Producto> findAll();
-    public Optional<Producto> findById(long id);
-    public Producto save(ProductoDTO producto);
-    public Producto update(Long id, ProductoDTO producto);
-    public void deleteById(Producto producto);
+    List<Producto> findAll();
+    Optional<Producto> findById(Long id);
+    Producto save(Producto producto);
+    void deleteById(Long id);
+
 }

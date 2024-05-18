@@ -5,28 +5,27 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "Categoria")
+@Table(name = "categoria")
 public class Categoria implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCategoria;
 
-    @Setter
     @Column(name = "nombre_categoria", length = 100, nullable = false)
     private String nombreCategoria;
 
-    @Setter
     @Column(name = "descripcion_categoria", length = 250, nullable = false)
     private String descripcionCategoria;
 
@@ -38,15 +37,8 @@ public class Categoria implements Serializable {
             },
             allowSetters = true
     )
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "idCategoria", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "categoria", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Producto> productos;
 
-
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos;
-        for(Producto prod : productos) {
-            prod.setIdCategoria(this);
-        }
-    }
 }

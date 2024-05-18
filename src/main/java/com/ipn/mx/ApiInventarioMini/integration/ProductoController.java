@@ -1,103 +1,84 @@
 package com.ipn.mx.ApiInventarioMini.integration;
 
 
-import com.ipn.mx.ApiInventarioMini.domain.dto.ProductoDTO;
 import com.ipn.mx.ApiInventarioMini.domain.dto.ProductosCategoria;
+import com.ipn.mx.ApiInventarioMini.domain.entity.Categoria;
 import com.ipn.mx.ApiInventarioMini.domain.entity.Producto;
+import com.ipn.mx.ApiInventarioMini.service.CategoriaServiceImpl;
 import com.ipn.mx.ApiInventarioMini.service.ProductoService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/apiProducto")
+@RequestMapping("/api/productos")
 public class ProductoController {
-    @Autowired
-    private ProductoService service;
-    @Autowired
-    private CategoriaController categoriaController;
 
-    @GetMapping("/productos")
-    public ResponseEntity<List<Producto>> getProductos() {
-        try{
-            List<Producto> productoList = service.findAll();
-            if(productoList.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(productoList, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @Autowired
+    private ProductoService productoService;
+
+    @Autowired
+    private CategoriaServiceImpl categoriaService;
+
+    @GetMapping
+    public List<Producto> getAllProductos() {
+        return productoService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Producto> getProductoById(@PathVariable Long id) {
+        Optional<Producto> producto = productoService.findById(id);
+        if (producto.isPresent()) {
+            return ResponseEntity.ok(producto.get());
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 
-    @GetMapping("/productosPorCategoria")
+    @PostMapping("/categoria/{categoriaId}")
+    public ResponseEntity<Producto> createProductoForCategoria(@PathVariable Integer categoriaId, @RequestBody Producto producto) {
+        Optional<Categoria> optionalCategoria = categoriaService.findById(categoriaId);
+        if (optionalCategoria.isPresent()) {
+            Categoria categoria = optionalCategoria.get();
+            producto.setCategoria(categoria);
+            Producto nuevoProducto = productoService.save(producto);
+            return ResponseEntity.ok(nuevoProducto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping
+    public Producto createProducto(@RequestBody Producto producto) {
+        return productoService.save(producto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Producto> updateProducto(@PathVariable Long id, @RequestBody Producto productoDetails) {
+        Optional<Producto> optionalProducto = productoService.findById(id);
+        if (optionalProducto.isPresent()) {
+            Producto producto = optionalProducto.get();
+            producto.setNombreProducto(productoDetails.getNombreProducto());
+            producto.setDescripcionProducto(productoDetails.getDescripcionProducto());
+            producto.setPrecio(productoDetails.getPrecio());
+            producto.setExistencia(productoDetails.getExistencia());
+            return ResponseEntity.ok(productoService.save(producto));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProducto(@PathVariable Long id) {
+        productoService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/porCategoria")
     public ResponseEntity<List<ProductosCategoria>> getProductosPorCategoria() {
-        try {
-            List<ProductosCategoria> prodCategoList = service.productoPorCategoria();
-            if(prodCategoList.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }else{
-                return new ResponseEntity<>(prodCategoList, HttpStatus.OK);
-            }
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
-    @GetMapping("/producto/{id}")
-    public ResponseEntity<Producto> getProducto(@PathVariable Integer id) {
-        try {
-            Optional<Producto> p = service.findById(id);
-            if(p.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            } else {
-                return new ResponseEntity<>(p.get(), HttpStatus.OK);
-            }
-        } catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/producto")
-    public ResponseEntity<Producto> addProducto(@Valid @RequestBody ProductoDTO producto) {
-        try {
-            Producto resp = service.save(producto);
-            return new ResponseEntity<>(resp, HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/producto/{id}")
-    public ResponseEntity<Producto> updateProducto(@PathVariable Integer id,@RequestBody ProductoDTO producto) {
-        try{
-            Producto p = service.update(Long.valueOf(id), producto);
-            if(p == null){
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }else{
-                return new ResponseEntity<>(p, HttpStatus.OK);
-            }
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @DeleteMapping("/producto/{id}")
-    public ResponseEntity<Producto> deleteProducto(@PathVariable Integer id){
-        try {
-            Optional<Producto> res = service.findById(id);
-            if(res.isPresent()){
-                service.deleteById(res.get());
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<ProductosCategoria> res = productoService.productoPorCategoria();
+        return ResponseEntity.ok(res);
     }
 }

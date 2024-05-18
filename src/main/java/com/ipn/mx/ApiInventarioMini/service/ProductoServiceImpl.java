@@ -1,10 +1,7 @@
 package com.ipn.mx.ApiInventarioMini.service;
 
-import com.ipn.mx.ApiInventarioMini.domain.dto.ProductoDTO;
 import com.ipn.mx.ApiInventarioMini.domain.dto.ProductosCategoria;
-import com.ipn.mx.ApiInventarioMini.domain.entity.Categoria;
 import com.ipn.mx.ApiInventarioMini.domain.entity.Producto;
-import com.ipn.mx.ApiInventarioMini.domain.repository.CategoriaRepo;
 import com.ipn.mx.ApiInventarioMini.domain.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,11 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductoServiceImpl implements ProductoService{
+public class ProductoServiceImpl implements ProductoService {
     @Autowired
     ProductoRepository repository;
-    @Autowired
-    CategoriaRepo categoriaRepo;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,58 +32,22 @@ public class ProductoServiceImpl implements ProductoService{
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Producto> findAll() {
         return repository.findAll();
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<Producto> findById(long id) {
+    public Optional<Producto> findById(Long id) {
         return repository.findById(id);
     }
 
     @Override
-    @Transactional
-    public Producto save(ProductoDTO productoDTO) {
-        Producto producto = new Producto();
-        producto.setNombreProducto(productoDTO.getNombreProducto());
-        producto.setDescripcionProducto(productoDTO.getDescripcionProducto());
-        producto.setPrecio(productoDTO.getPrecio());
-        producto.setExistencia(productoDTO.getExistencia());
-
-        System.out.println(productoDTO.getIdCategoria());
-        Optional<Categoria> categoriaOptional = categoriaRepo.findById(productoDTO.getIdCategoria());
-        if (categoriaOptional.isPresent()) {
-            producto.setIdCategoria(categoriaOptional.get());
-        } else {
-            // Handle the case where category is not found (e.g., log a warning or throw a custom exception)
-            System.out.println("Categoria with ID " + productoDTO.getIdCategoria() + " not found");
-        }
-
+    public Producto save(Producto producto) {
         return repository.save(producto);
     }
 
     @Override
-    public Producto update(Long id, ProductoDTO producto) {
-        Optional<Producto> p = repository.findById(id);
-        if(p.isEmpty()){
-            return null;
-        }else{
-            Producto productoAux = p.get();
-            productoAux.setNombreProducto(producto.getNombreProducto());
-            productoAux.setDescripcionProducto(producto.getDescripcionProducto());
-            productoAux.setPrecio(producto.getPrecio());
-            productoAux.setExistencia(producto.getExistencia());
-            Categoria categoria = categoriaRepo.findById(producto.getIdCategoria()).orElseThrow();
-            productoAux.setIdCategoria(categoria);
-            return repository.save(productoAux);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteById(Producto producto) {
-        repository.deleteById(producto.getIdProducto());
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 }
